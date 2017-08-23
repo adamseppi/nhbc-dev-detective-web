@@ -1,0 +1,587 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="DevDetectiveModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Facilities">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="ParentFacilityId" Type="int" />
+          <Property Name="TenantId" Type="int" Nullable="false" />
+          <Property Name="UpdateDate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="FacilityInventoryItemTypes">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="FacilityId" Type="int" Nullable="false" />
+          <Property Name="InventoryItemTypeId" Type="int" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" />
+          <Property Name="QuantityOnHand" Type="int" />
+          <Property Name="QuantityOnOrder" Type="int" />
+          <Property Name="SKU" Type="nchar" MaxLength="10" />
+          <Property Name="UpdateDate" Type="datetime" />
+          <Property Name="Price" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+        </EntityType>
+        <EntityType Name="FacilitySaleItems">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FacilityInventoryItemTypeId" Type="int" Nullable="false" />
+          <Property Name="FacilitySaleId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Notes" Type="nvarchar(max)" />
+          <Property Name="Quantity" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="FacilitySales">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="FacilityId" Type="int" Nullable="false" />
+          <Property Name="Completed" Type="bit" Nullable="false" />
+          <Property Name="CustomerName" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="FacilityUsers">
+          <Key>
+            <PropertyRef Name="FacilityId" />
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="FacilityId" Type="int" Nullable="false" />
+          <Property Name="UserId" Type="nvarchar" MaxLength="450" Nullable="false" />
+        </EntityType>
+        <EntityType Name="InventoryItemTypes">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="SKU" Type="nchar" MaxLength="10" />
+          <Property Name="UpdateDate" Type="datetime" />
+          <Property Name="Price" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Tenants">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="UpdateDate" Type="datetime" />
+        </EntityType>
+        <Association Name="FK_Facility_ParentFacility">
+          <End Role="Facilities" Type="Self.Facilities" Multiplicity="0..1" />
+          <End Role="Facilities1" Type="Self.Facilities" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Facilities">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Facilities1">
+              <PropertyRef Name="ParentFacilityId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Facility_Tenant">
+          <End Role="Tenants" Type="Self.Tenants" Multiplicity="1" />
+          <End Role="Facilities" Type="Self.Facilities" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tenants">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Facilities">
+              <PropertyRef Name="TenantId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FacilityInventoryItemType_Facility">
+          <End Role="Facilities" Type="Self.Facilities" Multiplicity="1" />
+          <End Role="FacilityInventoryItemTypes" Type="Self.FacilityInventoryItemTypes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Facilities">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="FacilityInventoryItemTypes">
+              <PropertyRef Name="FacilityId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FacilityInventoryItemType_InventoryType">
+          <End Role="InventoryItemTypes" Type="Self.InventoryItemTypes" Multiplicity="0..1" />
+          <End Role="FacilityInventoryItemTypes" Type="Self.FacilityInventoryItemTypes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InventoryItemTypes">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="FacilityInventoryItemTypes">
+              <PropertyRef Name="InventoryItemTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FacilitySaleItems_FacilityInventoryItemTypes_FacilityInventoryItemTypeId">
+          <End Role="FacilityInventoryItemTypes" Type="Self.FacilityInventoryItemTypes" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="FacilitySaleItems" Type="Self.FacilitySaleItems" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FacilityInventoryItemTypes">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="FacilitySaleItems">
+              <PropertyRef Name="FacilityInventoryItemTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FacilitySaleItems_FacilitySales_FacilitySaleId">
+          <End Role="FacilitySales" Type="Self.FacilitySales" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="FacilitySaleItems" Type="Self.FacilitySaleItems" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FacilitySales">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="FacilitySaleItems">
+              <PropertyRef Name="FacilitySaleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FacilitySales_Facilities_FacilityId">
+          <End Role="Facilities" Type="Self.Facilities" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="FacilitySales" Type="Self.FacilitySales" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Facilities">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="FacilitySales">
+              <PropertyRef Name="FacilityId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FacilityUsers_Facilities_FacilityId">
+          <End Role="Facilities" Type="Self.Facilities" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="FacilityUsers" Type="Self.FacilityUsers" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Facilities">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="FacilityUsers">
+              <PropertyRef Name="FacilityId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="DevDetectiveModelStoreContainer">
+          <EntitySet Name="Facilities" EntityType="Self.Facilities" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="FacilityInventoryItemTypes" EntityType="Self.FacilityInventoryItemTypes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="FacilitySaleItems" EntityType="Self.FacilitySaleItems" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="FacilitySales" EntityType="Self.FacilitySales" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="FacilityUsers" EntityType="Self.FacilityUsers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="InventoryItemTypes" EntityType="Self.InventoryItemTypes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Tenants" EntityType="Self.Tenants" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Facility_ParentFacility" Association="Self.FK_Facility_ParentFacility">
+            <End Role="Facilities" EntitySet="Facilities" />
+            <End Role="Facilities1" EntitySet="Facilities" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Facility_Tenant" Association="Self.FK_Facility_Tenant">
+            <End Role="Tenants" EntitySet="Tenants" />
+            <End Role="Facilities" EntitySet="Facilities" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FacilityInventoryItemType_Facility" Association="Self.FK_FacilityInventoryItemType_Facility">
+            <End Role="Facilities" EntitySet="Facilities" />
+            <End Role="FacilityInventoryItemTypes" EntitySet="FacilityInventoryItemTypes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FacilityInventoryItemType_InventoryType" Association="Self.FK_FacilityInventoryItemType_InventoryType">
+            <End Role="InventoryItemTypes" EntitySet="InventoryItemTypes" />
+            <End Role="FacilityInventoryItemTypes" EntitySet="FacilityInventoryItemTypes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FacilitySaleItems_FacilityInventoryItemTypes_FacilityInventoryItemTypeId" Association="Self.FK_FacilitySaleItems_FacilityInventoryItemTypes_FacilityInventoryItemTypeId">
+            <End Role="FacilityInventoryItemTypes" EntitySet="FacilityInventoryItemTypes" />
+            <End Role="FacilitySaleItems" EntitySet="FacilitySaleItems" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FacilitySaleItems_FacilitySales_FacilitySaleId" Association="Self.FK_FacilitySaleItems_FacilitySales_FacilitySaleId">
+            <End Role="FacilitySales" EntitySet="FacilitySales" />
+            <End Role="FacilitySaleItems" EntitySet="FacilitySaleItems" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FacilitySales_Facilities_FacilityId" Association="Self.FK_FacilitySales_Facilities_FacilityId">
+            <End Role="Facilities" EntitySet="Facilities" />
+            <End Role="FacilitySales" EntitySet="FacilitySales" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FacilityUsers_Facilities_FacilityId" Association="Self.FK_FacilityUsers_Facilities_FacilityId">
+            <End Role="Facilities" EntitySet="Facilities" />
+            <End Role="FacilityUsers" EntitySet="FacilityUsers" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="DevDetectiveModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Facility">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ParentFacilityId" Type="Int32" />
+          <Property Name="TenantId" Type="Int32" Nullable="false" />
+          <Property Name="UpdateDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Facilities1" Relationship="Self.FK_Facility_ParentFacility" FromRole="Facilities" ToRole="Facilities1" />
+          <NavigationProperty Name="Facility1" Relationship="Self.FK_Facility_ParentFacility" FromRole="Facilities1" ToRole="Facilities" />
+          <NavigationProperty Name="Tenant" Relationship="Self.FK_Facility_Tenant" FromRole="Facilities" ToRole="Tenants" />
+          <NavigationProperty Name="FacilityInventoryItemTypes" Relationship="Self.FK_FacilityInventoryItemType_Facility" FromRole="Facilities" ToRole="FacilityInventoryItemTypes" />
+          <NavigationProperty Name="FacilitySales" Relationship="Self.FK_FacilitySales_Facilities_FacilityId" FromRole="Facilities" ToRole="FacilitySales" />
+          <NavigationProperty Name="FacilityUsers" Relationship="Self.FK_FacilityUsers_Facilities_FacilityId" FromRole="Facilities" ToRole="FacilityUsers" />
+        </EntityType>
+        <EntityType Name="FacilityInventoryItemType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="FacilityId" Type="Int32" Nullable="false" />
+          <Property Name="InventoryItemTypeId" Type="Int32" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="QuantityOnHand" Type="Int32" />
+          <Property Name="QuantityOnOrder" Type="Int32" />
+          <Property Name="SKU" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="UpdateDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Facility" Relationship="Self.FK_FacilityInventoryItemType_Facility" FromRole="FacilityInventoryItemTypes" ToRole="Facilities" />
+          <NavigationProperty Name="InventoryItemType" Relationship="Self.FK_FacilityInventoryItemType_InventoryType" FromRole="FacilityInventoryItemTypes" ToRole="InventoryItemTypes" />
+          <NavigationProperty Name="FacilitySaleItems" Relationship="Self.FK_FacilitySaleItems_FacilityInventoryItemTypes_FacilityInventoryItemTypeId" FromRole="FacilityInventoryItemTypes" ToRole="FacilitySaleItems" />
+          <Property Name="Price" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+        </EntityType>
+        <EntityType Name="FacilitySaleItem">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FacilityInventoryItemTypeId" Type="Int32" Nullable="false" />
+          <Property Name="FacilitySaleId" Type="Guid" Nullable="false" />
+          <Property Name="Notes" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Quantity" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="FacilityInventoryItemType" Relationship="Self.FK_FacilitySaleItems_FacilityInventoryItemTypes_FacilityInventoryItemTypeId" FromRole="FacilitySaleItems" ToRole="FacilityInventoryItemTypes" />
+          <NavigationProperty Name="FacilitySale" Relationship="Self.FK_FacilitySaleItems_FacilitySales_FacilitySaleId" FromRole="FacilitySaleItems" ToRole="FacilitySales" />
+        </EntityType>
+        <EntityType Name="FacilitySale">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="FacilityId" Type="Int32" Nullable="false" />
+          <Property Name="Completed" Type="Boolean" Nullable="false" />
+          <Property Name="CustomerName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Facility" Relationship="Self.FK_FacilitySales_Facilities_FacilityId" FromRole="FacilitySales" ToRole="Facilities" />
+          <NavigationProperty Name="FacilitySaleItems" Relationship="Self.FK_FacilitySaleItems_FacilitySales_FacilitySaleId" FromRole="FacilitySales" ToRole="FacilitySaleItems" />
+        </EntityType>
+        <EntityType Name="FacilityUser">
+          <Key>
+            <PropertyRef Name="FacilityId" />
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="FacilityId" Type="Int32" Nullable="false" />
+          <Property Name="UserId" Type="String" MaxLength="450" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Facility" Relationship="Self.FK_FacilityUsers_Facilities_FacilityId" FromRole="FacilityUsers" ToRole="Facilities" />
+        </EntityType>
+        <EntityType Name="InventoryItemType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="SKU" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="UpdateDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="FacilityInventoryItemTypes" Relationship="Self.FK_FacilityInventoryItemType_InventoryType" FromRole="InventoryItemTypes" ToRole="FacilityInventoryItemTypes" />
+          <Property Name="Price" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+        </EntityType>
+        <EntityType Name="Tenant">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="UpdateDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Facilities" Relationship="Self.FK_Facility_Tenant" FromRole="Tenants" ToRole="Facilities" />
+        </EntityType>
+        <Association Name="FK_Facility_ParentFacility">
+          <End Role="Facilities" Type="Self.Facility" Multiplicity="0..1" />
+          <End Role="Facilities1" Type="Self.Facility" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Facilities">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Facilities1">
+              <PropertyRef Name="ParentFacilityId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Facility_Tenant">
+          <End Role="Tenants" Type="Self.Tenant" Multiplicity="1" />
+          <End Role="Facilities" Type="Self.Facility" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tenants">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Facilities">
+              <PropertyRef Name="TenantId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FacilityInventoryItemType_Facility">
+          <End Role="Facilities" Type="Self.Facility" Multiplicity="1" />
+          <End Role="FacilityInventoryItemTypes" Type="Self.FacilityInventoryItemType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Facilities">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="FacilityInventoryItemTypes">
+              <PropertyRef Name="FacilityId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FacilitySales_Facilities_FacilityId">
+          <End Role="Facilities" Type="Self.Facility" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="FacilitySales" Type="Self.FacilitySale" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Facilities">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="FacilitySales">
+              <PropertyRef Name="FacilityId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FacilityUsers_Facilities_FacilityId">
+          <End Role="Facilities" Type="Self.Facility" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="FacilityUsers" Type="Self.FacilityUser" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Facilities">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="FacilityUsers">
+              <PropertyRef Name="FacilityId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FacilityInventoryItemType_InventoryType">
+          <End Role="InventoryItemTypes" Type="Self.InventoryItemType" Multiplicity="0..1" />
+          <End Role="FacilityInventoryItemTypes" Type="Self.FacilityInventoryItemType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InventoryItemTypes">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="FacilityInventoryItemTypes">
+              <PropertyRef Name="InventoryItemTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FacilitySaleItems_FacilityInventoryItemTypes_FacilityInventoryItemTypeId">
+          <End Role="FacilityInventoryItemTypes" Type="Self.FacilityInventoryItemType" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="FacilitySaleItems" Type="Self.FacilitySaleItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FacilityInventoryItemTypes">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="FacilitySaleItems">
+              <PropertyRef Name="FacilityInventoryItemTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FacilitySaleItems_FacilitySales_FacilitySaleId">
+          <End Role="FacilitySales" Type="Self.FacilitySale" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="FacilitySaleItems" Type="Self.FacilitySaleItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FacilitySales">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="FacilitySaleItems">
+              <PropertyRef Name="FacilitySaleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="DevDetectiveEntities1" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Facilities" EntityType="Self.Facility" />
+          <EntitySet Name="FacilityInventoryItemTypes" EntityType="Self.FacilityInventoryItemType" />
+          <EntitySet Name="FacilitySaleItems" EntityType="Self.FacilitySaleItem" />
+          <EntitySet Name="FacilitySales" EntityType="Self.FacilitySale" />
+          <EntitySet Name="FacilityUsers" EntityType="Self.FacilityUser" />
+          <EntitySet Name="InventoryItemTypes" EntityType="Self.InventoryItemType" />
+          <EntitySet Name="Tenants" EntityType="Self.Tenant" />
+          <AssociationSet Name="FK_Facility_ParentFacility" Association="Self.FK_Facility_ParentFacility">
+            <End Role="Facilities" EntitySet="Facilities" />
+            <End Role="Facilities1" EntitySet="Facilities" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Facility_Tenant" Association="Self.FK_Facility_Tenant">
+            <End Role="Tenants" EntitySet="Tenants" />
+            <End Role="Facilities" EntitySet="Facilities" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FacilityInventoryItemType_Facility" Association="Self.FK_FacilityInventoryItemType_Facility">
+            <End Role="Facilities" EntitySet="Facilities" />
+            <End Role="FacilityInventoryItemTypes" EntitySet="FacilityInventoryItemTypes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FacilitySales_Facilities_FacilityId" Association="Self.FK_FacilitySales_Facilities_FacilityId">
+            <End Role="Facilities" EntitySet="Facilities" />
+            <End Role="FacilitySales" EntitySet="FacilitySales" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FacilityUsers_Facilities_FacilityId" Association="Self.FK_FacilityUsers_Facilities_FacilityId">
+            <End Role="Facilities" EntitySet="Facilities" />
+            <End Role="FacilityUsers" EntitySet="FacilityUsers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FacilityInventoryItemType_InventoryType" Association="Self.FK_FacilityInventoryItemType_InventoryType">
+            <End Role="InventoryItemTypes" EntitySet="InventoryItemTypes" />
+            <End Role="FacilityInventoryItemTypes" EntitySet="FacilityInventoryItemTypes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FacilitySaleItems_FacilityInventoryItemTypes_FacilityInventoryItemTypeId" Association="Self.FK_FacilitySaleItems_FacilityInventoryItemTypes_FacilityInventoryItemTypeId">
+            <End Role="FacilityInventoryItemTypes" EntitySet="FacilityInventoryItemTypes" />
+            <End Role="FacilitySaleItems" EntitySet="FacilitySaleItems" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FacilitySaleItems_FacilitySales_FacilitySaleId" Association="Self.FK_FacilitySaleItems_FacilitySales_FacilitySaleId">
+            <End Role="FacilitySales" EntitySet="FacilitySales" />
+            <End Role="FacilitySaleItems" EntitySet="FacilitySaleItems" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="DevDetectiveModelStoreContainer" CdmEntityContainer="DevDetectiveEntities1">
+          <EntitySetMapping Name="Facilities">
+            <EntityTypeMapping TypeName="DevDetectiveModel.Facility">
+              <MappingFragment StoreEntitySet="Facilities">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ParentFacilityId" ColumnName="ParentFacilityId" />
+                <ScalarProperty Name="TenantId" ColumnName="TenantId" />
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="FacilityInventoryItemTypes">
+            <EntityTypeMapping TypeName="DevDetectiveModel.FacilityInventoryItemType">
+              <MappingFragment StoreEntitySet="FacilityInventoryItemTypes">
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="FacilityId" ColumnName="FacilityId" />
+                <ScalarProperty Name="InventoryItemTypeId" ColumnName="InventoryItemTypeId" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="QuantityOnHand" ColumnName="QuantityOnHand" />
+                <ScalarProperty Name="QuantityOnOrder" ColumnName="QuantityOnOrder" />
+                <ScalarProperty Name="SKU" ColumnName="SKU" />
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="FacilitySaleItems">
+            <EntityTypeMapping TypeName="DevDetectiveModel.FacilitySaleItem">
+              <MappingFragment StoreEntitySet="FacilitySaleItems">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="FacilityInventoryItemTypeId" ColumnName="FacilityInventoryItemTypeId" />
+                <ScalarProperty Name="FacilitySaleId" ColumnName="FacilitySaleId" />
+                <ScalarProperty Name="Notes" ColumnName="Notes" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="FacilitySales">
+            <EntityTypeMapping TypeName="DevDetectiveModel.FacilitySale">
+              <MappingFragment StoreEntitySet="FacilitySales">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="FacilityId" ColumnName="FacilityId" />
+                <ScalarProperty Name="Completed" ColumnName="Completed" />
+                <ScalarProperty Name="CustomerName" ColumnName="CustomerName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="FacilityUsers">
+            <EntityTypeMapping TypeName="DevDetectiveModel.FacilityUser">
+              <MappingFragment StoreEntitySet="FacilityUsers">
+                <ScalarProperty Name="FacilityId" ColumnName="FacilityId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="InventoryItemTypes">
+            <EntityTypeMapping TypeName="DevDetectiveModel.InventoryItemType">
+              <MappingFragment StoreEntitySet="InventoryItemTypes">
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="SKU" ColumnName="SKU" />
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Tenants">
+            <EntityTypeMapping TypeName="DevDetectiveModel.Tenant">
+              <MappingFragment StoreEntitySet="Tenants">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="true" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
